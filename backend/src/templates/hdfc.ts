@@ -3,7 +3,7 @@ import { TransactionType } from "../models/Transaction";
 
 export const HDFC_TEMPLATE: BankTemplateConfig = {
     bankName: 'HDFC Bank',
-    senderEmail: 'alerts@hdfcbank.net',
+    senderEmail: 'alerts@hdfcbank.bank.in',
     patterns: [
         {
             type: TransactionType.DEBIT,

@@ -15,12 +15,16 @@ export async function seedDatabase() {
         if (!hdfc) {
             hdfc = new Bank();
             hdfc.name = "HDFC Bank";
-            hdfc.senderEmail = "alerts@hdfcbank.net";
+            hdfc.senderEmail = "alerts@hdfcbank.bank.in";
             await bankRepo.save(hdfc);
             console.log("[Seeder] Created HDFC Bank");
+        } else if (hdfc.senderEmail !== 'alerts@hdfcbank.bank.in') {
+            hdfc.senderEmail = 'alerts@hdfcbank.bank.in';
+            await bankRepo.save(hdfc);
+            console.log("[Seeder] Updated HDFC Bank sender email");
         }
 
-        // Seed HDFC Template
+        // Seed HDFC Template - Update if exists to ensure latest patterns
         const existingTemplate = await templateRepo.findOneBy({ bankId: hdfc.id });
         if (!existingTemplate) {
             const template = new BankTemplate();
@@ -28,6 +32,10 @@ export async function seedDatabase() {
             template.templateJson = HDFC_TEMPLATE;
             await templateRepo.save(template);
             console.log("[Seeder] Created HDFC Template");
+        } else {
+            existingTemplate.templateJson = HDFC_TEMPLATE;
+            await templateRepo.save(existingTemplate);
+            console.log("[Seeder] Updated HDFC Template patterns");
         }
 
         const templateCount = await templateRepo.count();
