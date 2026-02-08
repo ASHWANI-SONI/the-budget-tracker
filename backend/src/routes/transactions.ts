@@ -131,31 +131,45 @@ router.post('/', async (req, res) => {
 
         const transaction = new Transaction();
         transaction.userId = userId;
-        transaction.amount = parseFloat(amount);
+        transaction.amount = parseFloat(amount.toString());
         transaction.description = description || "Manual Entry";
         transaction.type = type as TransactionType;
-        transaction.status = TransactionStatus.CONFIRMED; // Manual entries are auto-confirmed
+        transaction.status = TransactionStatus.CONFIRMED;
         transaction.transactionDate = new Date(transactionDate || Date.now());
 
-        // Manual entries don't have bank or email
+        if (isNaN(transaction.amount)) {
+            return res.status(400).json({ error: "Invalid amount provided" });
+        }
 
         await AppDataSource.transaction(async (manager) => {
-            await manager.save(transaction);
+            // Save transaction
+            const savedTransaction = await manager.save(transaction);
 
-            // Update User Balance immediately
-            const txnAmount = Number(transaction.amount);
-            if (transaction.type === TransactionType.CREDIT) {
-                user.totalBalance = Number(user.totalBalance) + txnAmount;
+            // Update User Balance
+            // Handle decimal as string (returned by pg driver) safely
+            const currentBalance = parseFloat(user.totalBalance.toString() || '0');
+            const txnAmount = parseFloat(savedTransaction.amount.toString());
+
+            if (savedTransaction.type === TransactionType.CREDIT) {
+                user.totalBalance = currentBalance + txnAmount;
             } else {
-                user.totalBalance = Number(user.totalBalance) - txnAmount;
+                user.totalBalance = currentBalance - txnAmount;
             }
+
             await manager.save(user);
         });
 
         res.json(transaction);
-    } catch (error) {
-        console.error("Error creating transaction:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+    } catch (error: any) {
+        console.error("Error creating transaction:", {
+            message: error.message,
+            stack: error.stack,
+            body: req.body
+        });
+        res.status(500).json({
+            error: "Internal Server Error",
+            details: error.message
+        });
     }
 });
 

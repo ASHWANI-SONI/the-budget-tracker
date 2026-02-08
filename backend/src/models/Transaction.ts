@@ -26,11 +26,11 @@ export class Transaction {
     user!: User;
 
     @Column({ name: "bank_id", nullable: true })
-    bankId!: string;
+    bankId?: string;
 
-    @ManyToOne(() => Bank, bank => bank.transactions)
+    @ManyToOne(() => Bank, bank => bank.transactions, { nullable: true })
     @JoinColumn({ name: "bank_id" })
-    bank!: Bank;
+    bank?: Bank;
 
     @Column({ name: "email_message_id", unique: true, nullable: true })
     emailMessageId?: string;

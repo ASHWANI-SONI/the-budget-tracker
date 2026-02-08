@@ -14,8 +14,9 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Configure CORS for production
+const rawOrigin = process.env.FRONTEND_URL || 'http://localhost:5173';
 const corsOptions = {
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    origin: rawOrigin.replace(/\/$/, ''),
     credentials: true,
 };
 app.use(cors(corsOptions));
