@@ -13,35 +13,37 @@ export const getOAuth2Client = () => {
 };
 
 // For backward compatibility but using the helper
-const oauth2Client = getOAuth2Client();
+// const oauth2Client = getOAuth2Client(); // Removed global instance to avoid build-time placeholder issues
 
 export const getAuthUrl = () => {
+    const client = getOAuth2Client();
     const scopes = [
         'https://www.googleapis.com/auth/userinfo.profile',
         'https://www.googleapis.com/auth/userinfo.email',
         'https://www.googleapis.com/auth/gmail.readonly',
-        // Add Gmail modify if we want to mark as read/trash
     ];
 
-    return oauth2Client.generateAuthUrl({
+    return client.generateAuthUrl({
         access_type: 'offline',
         scope: scopes,
-        prompt: 'consent' // Force refresh token generation
+        prompt: 'consent'
     });
 };
 
 export const getTokens = async (code: string) => {
-    const { tokens } = await oauth2Client.getToken(code);
+    const client = getOAuth2Client();
+    const { tokens } = await client.getToken(code);
     return tokens;
 };
 
 export const getUserInfo = async (accessToken: string) => {
+    const client = getOAuth2Client();
     const oauth2 = google.oauth2({
-        auth: oauth2Client,
+        auth: client,
         version: 'v2'
     });
 
-    oauth2Client.setCredentials({ access_token: accessToken });
+    client.setCredentials({ access_token: accessToken });
 
     const userInfo = await oauth2.userinfo.get();
     return userInfo.data;

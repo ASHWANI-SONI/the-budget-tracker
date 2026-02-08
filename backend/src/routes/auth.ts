@@ -61,9 +61,16 @@ router.get('/google/callback', async (req, res) => {
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
         res.redirect(`${frontendUrl}/dashboard?userId=${user.id}`);
 
-    } catch (error) {
-        console.error('Error during Google Auth:', error);
-        res.status(500).json({ error: 'Authentication failed' });
+    } catch (error: any) {
+        console.error('Error during Google Auth Callback:', {
+            message: error.message,
+            stack: error.stack,
+            response: error.response?.data
+        });
+        res.status(500).json({
+            error: 'Authentication failed',
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }
 });
 
