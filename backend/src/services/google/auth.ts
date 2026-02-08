@@ -6,9 +6,9 @@ dotenv.config();
 // Helper to get OAuth2 client safely
 export const getOAuth2Client = () => {
     return new google.auth.OAuth2(
-        process.env.GOOGLE_CLIENT_ID || 'placeholder',
-        process.env.GOOGLE_CLIENT_SECRET || 'placeholder',
-        process.env.GOOGLE_REDIRECT_URI || 'placeholder'
+        process.env['GOOGLE_CLIENT_ID'] || 'placeholder',
+        process.env['GOOGLE_CLIENT_SECRET'] || 'placeholder',
+        process.env['GOOGLE_REDIRECT_URI'] || 'placeholder'
     );
 };
 
