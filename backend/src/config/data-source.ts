@@ -15,7 +15,7 @@ console.log('[Config] NODE_ENV:', process.env.NODE_ENV);
 export const AppDataSource = new DataSource({
     type: "postgres",
     url: process.env.DATABASE_URL,
-    synchronize: process.env.NODE_ENV !== 'production', // Disable in production
+    synchronize: true, // Enable for now to ensure tables are created in Railway DB
     logging: false,
     entities: [User, Bank, BankTemplate, Transaction],
     migrations: [],
