@@ -20,8 +20,12 @@ export interface BankTemplateConfig {
 
 export class TemplateParser {
     parse(emailBody: string, template: BankTemplateConfig): TransactionData | null {
-        // Normalize email body: remove HTML tags if present, though we expect raw text mostly
-        const cleanBody = emailBody.replace(/<[^>]*>?/gm, '');
+        // Normalize email body: remove HTML tags and their content (style, script)
+        const cleanBody = emailBody
+            .replace(/<(style|script)[^>]*>[\s\S]*?<\/\1>/gi, ' ')
+            .replace(/<[^>]*>?/gm, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
 
         for (const pattern of template.patterns) {
             try {
@@ -50,17 +54,21 @@ export class TemplateParser {
                     // For this MVP step, let's just use current date if parsing fails, but try to parse key formats.
                     let date = new Date();
                     if (match.groups.date) {
-                        // Very basic manual parsing for dd-mm-yyyy or similar common India bank formats
-                        // Assuming pattern.dateFormat hints at the structure. 
-                        // Implementation detail: For production, import { parse } from 'date-fns'
                         const dateStr = match.groups.date;
-                        // Simple heuristic for dd-mm-yyyy or dd/mm/yyyy
-                        const parts = dateStr.match(/(\d{2})[-/](\d{2})[-/](\d{4})/);
+                        // Support dd-mm-yyyy or dd-mm-yy (common in HDFC)
+                        const parts = dateStr.match(/(\d{1,2})[-/](\d{1,2})[-/](\d{2,4})/);
                         if (parts) {
-                            // parts[1] = day, parts[2] = month, parts[3] = year
-                            date = new Date(`${parts[3]}-${parts[2]}-${parts[1]}`);
+                            const day = parseInt(parts[1], 10);
+                            const month = parseInt(parts[2], 10) - 1; // 0-indexed
+                            let year = parseInt(parts[3], 10);
+
+                            // Handle 2-digit years (assuming 20xx for now)
+                            if (year < 100) {
+                                year += 2000;
+                            }
+
+                            date = new Date(year, month, day);
                         } else {
-                            // Try native parse
                             const nativeDate = new Date(dateStr);
                             if (!isNaN(nativeDate.getTime())) {
                                 date = nativeDate;
