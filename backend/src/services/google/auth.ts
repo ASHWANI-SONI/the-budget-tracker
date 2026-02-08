@@ -3,11 +3,17 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const oauth2Client = new google.auth.OAuth2(
-    process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET,
-    process.env.GOOGLE_REDIRECT_URI
-);
+// Helper to get OAuth2 client safely
+export const getOAuth2Client = () => {
+    return new google.auth.OAuth2(
+        process.env.GOOGLE_CLIENT_ID || 'placeholder',
+        process.env.GOOGLE_CLIENT_SECRET || 'placeholder',
+        process.env.GOOGLE_REDIRECT_URI || 'placeholder'
+    );
+};
+
+// For backward compatibility but using the helper
+const oauth2Client = getOAuth2Client();
 
 export const getAuthUrl = () => {
     const scopes = [
@@ -42,11 +48,7 @@ export const getUserInfo = async (accessToken: string) => {
 };
 
 export const getGmailClient = (accessToken: string, refreshToken?: string) => {
-    const client = new google.auth.OAuth2(
-        process.env.GOOGLE_CLIENT_ID,
-        process.env.GOOGLE_CLIENT_SECRET,
-        process.env.GOOGLE_REDIRECT_URI
-    );
+    const client = getOAuth2Client();
 
     client.setCredentials({
         access_token: accessToken,
