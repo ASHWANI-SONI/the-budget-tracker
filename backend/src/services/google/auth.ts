@@ -8,7 +8,7 @@ export const getOAuth2Client = () => {
     return new google.auth.OAuth2(
         process.env['GOOGLE_CLIENT_ID'] || 'placeholder',
         process.env['GOOGLE_CLIENT_SECRET'] || 'placeholder',
-        process.env['G_OAUTH_REDIRECT_URL'] || 'placeholder'
+        process.env['GOOGLE_REDIRECT_URI'] || 'http://localhost:3000/api/auth/google/callback'
     );
 };
 
