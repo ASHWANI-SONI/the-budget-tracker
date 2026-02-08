@@ -8,6 +8,10 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+// Debug: Log if DATABASE_URL is present (not the value itself for security)
+console.log('[Config] DATABASE_URL present:', !!process.env.DATABASE_URL);
+console.log('[Config] NODE_ENV:', process.env.NODE_ENV);
+
 export const AppDataSource = new DataSource({
     type: "postgres",
     url: process.env.DATABASE_URL,
@@ -16,4 +20,5 @@ export const AppDataSource = new DataSource({
     entities: [User, Bank, BankTemplate, Transaction],
     migrations: [],
     subscribers: [],
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 });
