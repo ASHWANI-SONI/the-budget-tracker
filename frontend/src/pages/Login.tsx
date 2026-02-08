@@ -4,7 +4,8 @@ import { Button } from '../components/ui/Button';
 export default function Login() {
     const handleGoogleLogin = () => {
         // Redirect to backend auth endpoint
-        window.location.href = 'http://localhost:3000/api/auth/google';
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+        window.location.href = `${apiUrl}/auth/google`;
     };
 
     return (

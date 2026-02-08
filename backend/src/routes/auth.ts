@@ -58,7 +58,8 @@ router.get('/google/callback', async (req, res) => {
         // Redirect to Frontend Dashboard with some session/token
         // For MVP, we might just redirect to localhost:5173/dashboard?uid=...
         // In production, use a proper session or JWT
-        res.redirect(`http://localhost:5173/dashboard?userId=${user.id}`);
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+        res.redirect(`${frontendUrl}/dashboard?userId=${user.id}`);
 
     } catch (error) {
         console.error('Error during Google Auth:', error);
