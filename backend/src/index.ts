@@ -7,6 +7,7 @@ import authRoutes from './routes/auth';
 import transactionRoutes from './routes/transactions';
 import userRoutes from './routes/users';
 import webhookRoutes from './routes/webhook';
+import { seedDatabase } from './services/db/seeder';
 
 dotenv.config();
 
@@ -22,8 +23,6 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-
-
 app.use('/api/auth', authRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/users', userRoutes);
@@ -34,8 +33,9 @@ app.get('/', (req, res) => {
 });
 
 AppDataSource.initialize()
-    .then(() => {
+    .then(async () => {
         console.log("Data Source has been initialized!");
+        await seedDatabase();
         app.listen(PORT, () => {
             console.log(`Server is running on port ${PORT}`);
         });
