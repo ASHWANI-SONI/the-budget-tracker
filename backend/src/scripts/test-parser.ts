@@ -11,6 +11,11 @@ const samples = [
         template: HDFC_TEMPLATE
     },
     {
+        name: 'HDFC UPI Debit (New User Sample)',
+        body: "Dear Customer, Rs.1.00 has been debited from account 0072 to VPA 7210072672@ptsbi Ashwani Soni on 08-02-26. Your UPI transaction reference number is 603962701815. If you did not authorize this transaction, please report it immediately by calling 18002586161 Or SMS BLOCK UPI to 7308080808. Warm Regards, HDFC Bank",
+        template: HDFC_TEMPLATE
+    },
+    {
         name: 'HDFC Standard Debit',
         body: "Rs. 1500.00 debited from a/c **1234 on 12-05-2024 to Zomato",
         template: HDFC_TEMPLATE
